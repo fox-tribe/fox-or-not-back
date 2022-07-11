@@ -8,13 +8,13 @@ class UserProfileInline(admin.StackedInline):
 
     
 class UserAdmin(BaseUserAdmin):
-    list_display = ('id', 'username', 'nickname', 'email')
+    list_display = ('id', 'username', 'nickname', 'email', 'birth')
     list_display_links = ('username', )
     list_filter = ('username', )
     search_fields = ('username', 'email', )
 
     fieldsets = (
-        ("info", {'fields': ('username', 'password', 'email', 'nickname', 'join_date',)}),
+        ("info", {'fields': ('username', 'password', 'email', 'nickname', 'birth', 'join_date',)}),
         ('Permissions', {'fields': ('is_admin', 'is_active', )}),)
 
     filter_horizontal = []
