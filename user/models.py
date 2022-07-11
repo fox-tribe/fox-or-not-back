@@ -31,9 +31,12 @@ class User(AbstractBaseUser):
     username = models.CharField("회원", max_length=20, unique=True)
     email = models.EmailField("이메일 주소", max_length=100)
     password = models.CharField("비밀번호", max_length=128)
-    password2 = models.CharField("비밀번호2", max_length=128, default="")
-    fullname = models.CharField("이름", max_length=20)
+    nickname = models.CharField("닉네임", max_length=30)
+    birth = models.DateTimeField("생년월일", max_length=20, null=True)
+    gender = models.CharField("성별", max_length=20)
     join_date = models.DateTimeField("가입일", auto_now_add=True)
+    sign_out_date = models.DateTimeField("탈퇴일", null=True)
+    
 
     # is_active가 False일 경우 계정이 비활성화됨
     is_active = models.BooleanField(default=True)
@@ -73,5 +76,6 @@ class User(AbstractBaseUser):
 class UserProfile(models.Model):
     username = models.OneToOneField(to=User, verbose_name="사용자", on_delete=models.CASCADE, primary_key=True)
     introduction = models.TextField("소개")
+    profile_image = models.ImageField("프로필사진", null=True)
 
 

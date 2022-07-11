@@ -101,7 +101,7 @@ CORS_ALLOW_HEADERS = [
     # "multipart/form-data",
 ]
 
-ROOT_URLCONF = 'ppb.urls'
+ROOT_URLCONF = 'fox.urls'
 
 TEMPLATES = [
     {
@@ -119,7 +119,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'ppb.wsgi.application'
+WSGI_APPLICATION = 'fox.wsgi.application'
 
 
 # Database
