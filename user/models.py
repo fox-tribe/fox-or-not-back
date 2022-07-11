@@ -32,7 +32,7 @@ class User(AbstractBaseUser):
     email = models.EmailField("이메일 주소", max_length=100)
     password = models.CharField("비밀번호", max_length=128)
     nickname = models.CharField("닉네임", max_length=30)
-    birth = models.DateTimeField("생년월일", max_length=20)
+    birth = models.DateTimeField("생년월일", max_length=20, null=True)
     gender = models.CharField("성별", max_length=20)
     join_date = models.DateTimeField("가입일", auto_now_add=True)
     sign_out_date = models.DateTimeField("탈퇴일", null=True)
