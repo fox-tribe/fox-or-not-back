@@ -82,31 +82,33 @@ class CommentView(APIView):
     # permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
     permission_classes = [permissions.AllowAny]
 
-    def get(self, request, article_id):
-        return Response(CommentSerializer(article_id).data)
+    def get(self, request, obj_id):
+        comment= CommentModel.objects.get(id=obj_id)
+        return Response(CommentSerializer(comment).data)
+
 
     # 댓글 작성
-    def post(self, request, article_id):
+    def post(self, request, obj_id):
         
         
         user = request.user
         print(user)
-        request.data['article'] = ArticleModel.objects.get(id=article_id)
-        contents = request.data.get('contents','')
+        request.data['article'] = ArticleModel.objects.get(id=obj_id)
+        contents = request.data.get('comment_contents','')
 
         comment = CommentModel(
             article = request.data['article'],
-            user = user,
-            contents = contents,
+            comment_author = user,
+            comment_contents = contents,
         )
 
         comment.save()
         return Response({"message":"댓글 작성 완료!"})
 
     # 댓글 업데이트
-    def put(self, request, comment_id):
+    def put(self, request, obj_id):
         data = request.data
-        comment = CommentModel.objects.get(id=comment_id)
+        comment = CommentModel.objects.get(id=obj_id)
         comment_serializer = CommentSerializer(comment, data, partial=True, context={"request": request})
 
         
@@ -117,19 +119,32 @@ class CommentView(APIView):
         return Response(comment_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # 댓글 삭제
-    def delete(self, request, comment_id):
+    def delete(self, request, obj_id):
         
-        obj = CommentModel.objects.get(id=comment_id)
-        user = obj.user
-        author = obj.article.author
-        CommentModel.objects.get(id=comment_id).delete()
+        obj = CommentModel.objects.get(id=obj_id)
+        comment_author = obj.comment_author
+        article_author = obj.article.article_author
+        CommentModel.objects.get(id=obj_id).delete()
 
-        if request.user == user:
-            return Response({'message': f'{user}님의 댓글이 삭제되었습니다.'})
+        if request.user == comment_author:
+            return Response({'message': f'{comment_author}님의 댓글이 삭제되었습니다.'})
         
-        elif request.user == author:
-            return Response({'message': f'{user}님의 댓글이 삭제되었습니다.'})
+        elif request.user == article_author:
+            return Response({'message': f'{comment_author}님의 댓글이 삭제되었습니다.'})
         
         else:
             return Response({'error': '댓글 삭제 권한이 없습니다'})
     
+
+    # 코멘트 작성자 아이디로 불러오는 함수
+class CommentUserView(APIView):
+    
+
+    def get(self, request, comment_id):
+        
+
+        
+        comment_detail = CommentModel.objects.get(id=comment_id)
+        comment_detail_user = comment_detail.user.username
+        
+        return Response(comment_detail_user)

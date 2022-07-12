@@ -14,7 +14,7 @@ class CommentSerializer(serializers.ModelSerializer):
     # custum update
     def update(self, instance, validated_data):        
         for key, value in validated_data.items():
-            if key == "comment_authour":
+            if key == "comment_author":
                 instance.user(value)
                 continue
             setattr(instance, key, value)
@@ -23,7 +23,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta :
         model = CommentModel
-        fields = ['id', 'article', 'comment_authour', 'comment_contents', 'comments_related_article']
+        fields = ['id', 'article', 'comment_author', 'comment_contents', 'comments_related_article']
 
 
 class ArticleSerializer(serializers.ModelSerializer):

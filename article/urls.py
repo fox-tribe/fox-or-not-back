@@ -11,4 +11,5 @@ urlpatterns = [
     path('', views.ArticleView.as_view()),
     path('<obj_id>/', views.ArticleView.as_view()),
     path('<obj_id>/detail/', views.ArticleDetailView.as_view()),
+    path('<obj_id>/comment/', views.CommentView.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
