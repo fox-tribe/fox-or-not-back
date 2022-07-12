@@ -36,6 +36,8 @@ class User(AbstractBaseUser):
     gender = models.CharField("성별", max_length=20)
     join_date = models.DateTimeField("가입일", auto_now_add=True)
     sign_out_date = models.DateTimeField("탈퇴일", null=True)
+
+    
     
 
     # is_active가 False일 경우 계정이 비활성화됨

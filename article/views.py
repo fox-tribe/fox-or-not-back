@@ -1,21 +1,26 @@
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated
 
 from article.models import (
     Article as ArticleModel,
     Comment as CommentModel,
     Board as BoardModel,
     Category as CategoryModel,
+    ArticleLike,
+    CommentLike,
+    CommentLikeBridge,
+    ArticleLikeBridge,
+    Vote as VoteModel,
 )
-
-from rest_framework.permissions import IsAuthenticated
 from article.serializers import (
     ArticleSerializer,
     CommentSerializer,
 )
 
-from rest_framework import permissions
+
 
 class ArticleView(APIView):
     # permission_classes = [permissions.AllowAny]
@@ -73,34 +78,28 @@ class ArticleDetailView(APIView):
         return Response(ArticleSerializer(article).data)
 class CommentView(APIView):
 
-    def get(self, request, article_id):
-        return Response(CommentSerializer(article_id).data)
+    def get(self, request, obj_id):
+        return Response(CommentSerializer(obj_id).data)
 
     # 댓글 작성
-    def post(self, request, article_id):
-        
-        
+    def post(self, request, obj_id):
         user = request.user
-        print(user)
-        request.data['article'] = ArticleModel.objects.get(id=article_id)
-        contents = request.data.get('contents','')
+        request.data['article'] = ArticleModel.objects.get(id=obj_id)
+        contents = request.data.get('comment_contents','')
 
         comment = CommentModel(
             article = request.data['article'],
-            user = user,
-            contents = contents,
+            comment_author = user,
+            comment_contents = contents,
         )
-
         comment.save()
         return Response({"message":"댓글 작성 완료!"})
 
     # 댓글 업데이트
-    def put(self, request, comment_id):
+    def put(self, request, obj_id):
         data = request.data
-        comment = CommentModel.objects.get(id=comment_id)
+        comment = CommentModel.objects.get(id=obj_id)
         comment_serializer = CommentSerializer(comment, data, partial=True, context={"request": request})
-
-        
         if comment_serializer.is_valid():
             comment_serializer.save()
             return Response(comment_serializer.data, status=status.HTTP_200_OK)
@@ -108,19 +107,122 @@ class CommentView(APIView):
         return Response(comment_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # 댓글 삭제
-    def delete(self, request, comment_id):
-        
-        obj = CommentModel.objects.get(id=comment_id)
-        user = obj.user
-        author = obj.article.author
-        CommentModel.objects.get(id=comment_id).delete()
+    def delete(self, request, obj_id):
+        obj = CommentModel.objects.get(id=obj_id)
+        comment_author = obj.comment_author
+        article_author = obj.article.article_author
+        CommentModel.objects.get(id=obj_id).delete()
 
-        if request.user == user:
-            return Response({'message': f'{user}님의 댓글이 삭제되었습니다.'})
+        if request.user == comment_author:
+            return Response({'message': f'{comment_author}님의 댓글이 삭제되었습니다.'})
         
-        elif request.user == author:
-            return Response({'message': f'{user}님의 댓글이 삭제되었습니다.'})
+        elif request.user == article_author:
+            return Response({'message': f'{comment_author}님의 댓글이 삭제되었습니다.'})
         
         else:
             return Response({'error': '댓글 삭제 권한이 없습니다'})
     
+
+class CommentUserView(APIView):
+    def get(self, request, comment_id):
+        comment_detail = CommentModel.objects.get(id=comment_id)
+        comment_detail_user = comment_detail.user.username
+        return Response(comment_detail_user)
+
+# 게시글 공감
+class ArticleLikeView(APIView):
+
+    def post(self, request, article_id):
+        like = ArticleLike.objects.create()
+        article_title = ArticleModel.objects.get(id=article_id)
+        all = list(ArticleLikeBridge.objects.all().values())
+        print(all)
+        all_id = []
+        for obj in all:
+            all_id.append(obj['user_id'])
+        
+
+        if request.user.id in all_id:
+            article_like = ArticleLikeBridge.objects.get(user_id=request.user.id)
+            article_like.delete()
+            return Response({'message': f'{request.user}님께서 {article_title.article_title}에 공감을 취소하셨습니다.'})
+        else:
+            article_like = ArticleLikeBridge(
+                article_id = article_id,
+                user_id = request.user.id,
+                like_id = like.id,
+                category = request.data.get('category')
+        )
+            article_like.save()
+            return Response({'message': f'{request.user}님께서 {article_title.article_title}에 {article_like.category}하셨습니다.'})
+
+
+# 댓글 공감
+class CommentLikeView(APIView):
+
+    def post(self, request, comment_id):
+        like = CommentLike.objects.create()
+        comment = CommentModel.objects.get(id=comment_id)
+        contents = comment.comment_contents
+        all = list(CommentLikeBridge.objects.all().values())
+        print(all)
+        all_id = []
+        for obj in all:
+            all_id.append(obj['user_id'])
+        
+
+        if request.user.id in all_id:
+            comment_like = CommentLikeBridge.objects.get(user_id=request.user.id)
+            comment_like.delete()
+            return Response({'message': f'{request.user}님께서 {contents[0:10]}...댓글에 공감을 취소하셨습니다.'})
+        else:
+            comment_like = CommentLikeBridge(
+                comment_id = comment_id,
+                user_id = request.user.id,
+                like_id = like.id,
+                category = request.data.get('category')
+        )
+            comment_like.save()
+            return Response({'message': f'{request.user}님께서 {contents[0:10]}...댓글에 {comment_like.category}하셨습니다.'})
+
+
+        
+class MostLikedArticleView(APIView):
+    def get(self, request):
+        articles = list(ArticleModel.objects.all().values())
+        articles_id = []
+        for article in articles:
+            articles_id.append(article['id'])
+        like_counts = []
+        for id in articles_id:
+            like_count = ArticleLikeBridge.objects.filter(article_id=id).count()
+            like_counts.append(like_count)
+        count_list = { name:value for name, value in zip(articles_id, like_counts)}
+        like_rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True)[:3]
+        first = like_rank[0][0]
+        second = like_rank[1][0]
+        third = like_rank[2][0]
+        ranking = [first, second, third]
+        article_rank = ArticleModel.objects.filter(id__in = ranking)
+        return Response(ArticleSerializer(article_rank, many=True).data)
+
+        #lookupfield 찾아보기
+
+class MostLikedCommentView(APIView):
+    def get(self, request):
+        comments = list(CommentModel.objects.all().values())
+        comments_id = []
+        for comment in comments:
+            comments_id.append(comment['id'])
+        like_counts = []
+        for id in comments_id:
+            like_count = CommentLikeBridge.objects.filter(comment_id=id).count()
+            like_counts.append(like_count)
+        count_list = { name:value for name, value in zip(comments_id, like_counts)}
+        like_rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True)[:3]
+        first = like_rank[0][0]
+        second = like_rank[1][0]
+        third = like_rank[2][0]
+        ranking = [first, second, third]
+        comment_rank = CommentModel.objects.filter(id__in = ranking)
+        return Response(CommentSerializer(comment_rank, many=True).data)

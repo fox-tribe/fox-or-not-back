@@ -1,10 +1,13 @@
 from django.contrib import admin
-from article.models import Article, Comment, Category, Vote, Like, Board
+from article.models import Article, Comment, Category, CommentLikeBridge, Vote, ArticleLike, CommentLike, Board, ArticleLikeBridge
 
 
 admin.site.register(Article)
 admin.site.register(Comment)
 admin.site.register(Category)
 admin.site.register(Vote)
-admin.site.register(Like)
+admin.site.register(ArticleLike)
+admin.site.register(CommentLike)
+admin.site.register(ArticleLikeBridge)
+admin.site.register(CommentLikeBridge)
 admin.site.register(Board)
