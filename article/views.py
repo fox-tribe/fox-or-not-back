@@ -214,7 +214,7 @@ class CommentLikeView(APIView):
             return Response({'message': f'{request.user}님께서 {contents[0:10]}...댓글에 {comment_like.category}하셨습니다.'})
 
 
-        
+# 공감순 게시글 탑3 리스팅
 class MostLikedArticleView(APIView):
     def get(self, request):
         articles = list(ArticleModel.objects.all().values())
@@ -234,8 +234,9 @@ class MostLikedArticleView(APIView):
         article_rank = ArticleModel.objects.filter(id__in = ranking)
         return Response(ArticleSerializer(article_rank, many=True).data)
 
-        #lookupfield 찾아보기
+       
 
+# 공감순 댓글 탑3 리스팅
 class MostLikedCommentView(APIView):
     def get(self, request):
         comments = list(CommentModel.objects.all().values())
@@ -254,3 +255,23 @@ class MostLikedCommentView(APIView):
         ranking = [first, second, third]
         comment_rank = CommentModel.objects.filter(id__in = ranking)
         return Response(CommentSerializer(comment_rank, many=True).data)
+
+# 투표순 탑3 리스팅
+class MostVotedArticleView(APIView):
+    def get(self, request):
+        articles = list(ArticleModel.objects.all().values())
+        articles_id = []
+        for article in articles:
+            articles_id.append(article['id'])
+        vote_counts = []
+        for id in articles_id:
+            vote_count = ArticleVoteBridge.objects.filter(article_id=id).count()
+            vote_counts.append(vote_count)
+        count_list = { name:value for name, value in zip(articles_id, vote_counts)}
+        vote_rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True)[:3]
+        first = vote_rank[0][0]
+        second = vote_rank[1][0]
+        third = vote_rank[2][0]
+        ranking = [first, second, third]
+        article_rank = ArticleModel.objects.filter(id__in = ranking)
+        return Response(ArticleSerializer(article_rank, many=True).data)
