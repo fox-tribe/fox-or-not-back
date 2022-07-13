@@ -1,8 +1,12 @@
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
+
+
+
 
 from article.models import (
     Article as ArticleModel,
@@ -20,6 +24,15 @@ from article.serializers import (
     ArticleSerializer,
     CommentSerializer,
 )
+
+
+# 게시글 페이지네이션 리스팅
+class ArticlePagination(APIView, LimitOffsetPagination):
+    def get(self, request, format=None):
+        articles = ArticleModel.objects.all()
+        results = self.paginate_queryset(articles, request, view=self)
+        serializer = ArticleSerializer(results, many=True)
+        return self.get_paginated_response(serializer.data)
 
 
 
@@ -275,3 +288,4 @@ class MostVotedArticleView(APIView):
         ranking = [first, second, third]
         article_rank = ArticleModel.objects.filter(id__in = ranking)
         return Response(ArticleSerializer(article_rank, many=True).data)
+
