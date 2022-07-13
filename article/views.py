@@ -1,8 +1,12 @@
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
+
+
+
 
 from article.models import (
     Article as ArticleModel,
@@ -13,12 +17,30 @@ from article.models import (
     CommentLike,
     CommentLikeBridge,
     ArticleLikeBridge,
+    ArticleVoteBridge,
     Vote as VoteModel,
 )
 from article.serializers import (
     ArticleSerializer,
     CommentSerializer,
 )
+
+
+# 게시글 페이지네이션 리스팅
+class ArticlePagination(APIView, LimitOffsetPagination):
+    def get(self, request, format=None):
+        articles = ArticleModel.objects.all()
+        results = self.paginate_queryset(articles, request, view=self)
+        serializer = ArticleSerializer(results, many=True)
+        return self.get_paginated_response(serializer.data)
+
+# 댓글 페이지네이션 리스팅
+class CommentPagination(APIView, LimitOffsetPagination):
+    def get(self, request, format=None):
+        comments = CommentModel.objects.all()
+        results = self.paginate_queryset(comments, request, view=self)
+        serializer = CommentSerializer(results, many=True)
+        return self.get_paginated_response(serializer.data)
 
 
 
@@ -157,6 +179,33 @@ class ArticleLikeView(APIView):
             return Response({'message': f'{request.user}님께서 {article_title.article_title}에 {article_like.category}하셨습니다.'})
 
 
+
+# 게시글 투표
+class ArticleVoteBridgeView(APIView):
+
+    def post(self, request, article_id):
+        vote = VoteModel.objects.create()
+        article_title = ArticleModel.objects.get(id=article_id)
+        all = list(ArticleVoteBridge.objects.all().values())
+        
+        all_id = []
+        for obj in all:
+            all_id.append(obj['user_id'])
+        if request.user.id in all_id:
+            article_vote = ArticleVoteBridge.objects.get(user_id=request.user.id)
+            article_vote.delete()
+            return Response({'message': f'{request.user}님께서 {article_title.article_title}에 투표를 취소하셨습니다.'})
+        else:
+            article_vote = ArticleVoteBridge(
+                article_id = article_id,
+                user_id = request.user.id,
+                vote_id = vote.id,
+                category = request.data.get('category',"")
+        )
+            article_vote.save()
+            return Response({'message': f'{request.user}님께서 {article_title.article_title}에 {article_vote.category} 투표하셨습니다.'})
+
+
 # 댓글 공감
 class CommentLikeView(APIView):
 
@@ -186,7 +235,7 @@ class CommentLikeView(APIView):
             return Response({'message': f'{request.user}님께서 {contents[0:10]}...댓글에 {comment_like.category}하셨습니다.'})
 
 
-        
+# 공감순 게시글 탑3 리스팅
 class MostLikedArticleView(APIView):
     def get(self, request):
         articles = list(ArticleModel.objects.all().values())
@@ -206,8 +255,9 @@ class MostLikedArticleView(APIView):
         article_rank = ArticleModel.objects.filter(id__in = ranking)
         return Response(ArticleSerializer(article_rank, many=True).data)
 
-        #lookupfield 찾아보기
+       
 
+# 공감순 댓글 탑3 리스팅
 class MostLikedCommentView(APIView):
     def get(self, request):
         comments = list(CommentModel.objects.all().values())
@@ -226,3 +276,23 @@ class MostLikedCommentView(APIView):
         ranking = [first, second, third]
         comment_rank = CommentModel.objects.filter(id__in = ranking)
         return Response(CommentSerializer(comment_rank, many=True).data)
+
+# 투표순 탑3 리스팅
+class MostVotedArticleView(APIView):
+    def get(self, request):
+        articles = list(ArticleModel.objects.all().values())
+        articles_id = []
+        for article in articles:
+            articles_id.append(article['id'])
+        vote_counts = []
+        for id in articles_id:
+            vote_count = ArticleVoteBridge.objects.filter(article_id=id).count()
+            vote_counts.append(vote_count)
+        count_list = { name:value for name, value in zip(articles_id, vote_counts)}
+        vote_rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True)[:3]
+        first = vote_rank[0][0]
+        second = vote_rank[1][0]
+        third = vote_rank[2][0]
+        ranking = [first, second, third]
+        article_rank = ArticleModel.objects.filter(id__in = ranking)
+        return Response(ArticleSerializer(article_rank, many=True).data)

@@ -67,4 +67,3 @@ class ArticleSerializer(serializers.ModelSerializer):
 #         model = CommentLikeModel
 #         fields = ['id', 'like_user', 'like', 'like_category', 'like_comment', 'like_article',
 #         'comment_set', 'article_set']
-

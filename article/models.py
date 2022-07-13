@@ -76,5 +76,3 @@ class CommentLikeBridge(models.Model):
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
     like = models.ForeignKey(CommentLike, on_delete=models.CASCADE, null=True)
     category = models.CharField("코멘트 공감 카테고리 이름", max_length=50, default="")
-
-

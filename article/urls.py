@@ -9,6 +9,8 @@ from django.conf import settings
 urlpatterns = [
     #article/
     path('', views.ArticleView.as_view()),
+    path('pagination/', views.ArticlePagination.as_view()),
+    path('pagination/comment/', views.ArticlePagination.as_view()),
     path('likeCount/', views.MostLikedArticleView.as_view()),
     path('voteCount/', views.MostVotedArticleView.as_view()),
     path('comment/likeCount/', views.MostLikedCommentView.as_view()),
