@@ -13,6 +13,7 @@ from article.models import (
     CommentLike,
     CommentLikeBridge,
     ArticleLikeBridge,
+    ArticleVoteBridge,
     Vote as VoteModel,
 )
 from article.serializers import (
@@ -155,6 +156,33 @@ class ArticleLikeView(APIView):
         )
             article_like.save()
             return Response({'message': f'{request.user}님께서 {article_title.article_title}에 {article_like.category}하셨습니다.'})
+
+
+
+# 게시글 투표
+class ArticleVoteBridgeView(APIView):
+
+    def post(self, request, article_id):
+        vote = VoteModel.objects.create()
+        article_title = ArticleModel.objects.get(id=article_id)
+        all = list(ArticleVoteBridge.objects.all().values())
+        
+        all_id = []
+        for obj in all:
+            all_id.append(obj['user_id'])
+        if request.user.id in all_id:
+            article_vote = ArticleVoteBridge.objects.get(user_id=request.user.id)
+            article_vote.delete()
+            return Response({'message': f'{request.user}님께서 {article_title.article_title}에 투표를 취소하셨습니다.'})
+        else:
+            article_vote = ArticleVoteBridge(
+                article_id = article_id,
+                user_id = request.user.id,
+                vote_id = vote.id,
+                category = request.data.get('category',"")
+        )
+            article_vote.save()
+            return Response({'message': f'{request.user}님께서 {article_title.article_title}에 {article_vote.category} 투표하셨습니다.'})
 
 
 # 댓글 공감
