@@ -7,6 +7,7 @@ from article.models import (
     Vote as VoteModel,
 )
 from user.models import User as User
+from user.serializers import UserSerializer
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -33,6 +34,10 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class ArticleSerializer(serializers.ModelSerializer):
     comment_set = CommentSerializer(many=True)
+    user = serializers.SerializerMethodField()
+
+    def get_user(self,obj):
+        return obj.article_author.username
 
     # custum update
     def update(self, instance, validated_data):
@@ -47,7 +52,7 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ArticleModel
-        fields = ['id','article_author','article_title','article_image',
+        fields = ['id','article_author','user','article_title','article_image',
         'article_contents','article_post_date',
         'article_exposure_date','comment_set'
         ]

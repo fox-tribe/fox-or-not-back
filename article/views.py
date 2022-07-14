@@ -1,10 +1,8 @@
-from xmlrpc.client import ResponseError
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
-from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
@@ -175,7 +173,7 @@ class ArticleLikeView(APIView):
         all_id = []
         for obj in all:
             all_id.append(obj['user_id'])
-            
+
         if request.user.id in all_id:
             article_like = ArticleLikeBridge.objects.get(user_id=request.user.id)
             article_like.delete()
@@ -310,3 +308,29 @@ class MostVotedArticleView(APIView):
         ranking = [first, second, third]
         article_rank = ArticleModel.objects.filter(id__in = ranking)
         return Response(ArticleSerializer(article_rank, many=True).data)
+
+
+class SearchResult(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    # 검색 결과 리스팅
+    def get(self, request):
+        keywords = request.data.get('search')
+        type= request.data.get('type')
+        # 내용 검색
+        if type == 1:
+            searched_contents = ArticleModel.objects.filter(article_contents__contains=keywords)
+            result = ArticleSerializer(searched_contents, many=True).data
+            return Response(result) 
+        # 작성자 검색
+        elif type == 2:
+            searched_authors = ArticleModel.objects.filter(article_author=keywords)
+            result = ArticleSerializer(searched_authors, many=True).data
+            return Response(result) 
+        # 제목 검색
+        else:
+            searched_titles = ArticleModel.objects.filter(article_title__contains=keywords)
+            result = ArticleSerializer(searched_titles, many=True).data
+            return Response(result) 
+        
+        
