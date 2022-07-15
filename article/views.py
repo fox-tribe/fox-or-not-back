@@ -5,9 +5,6 @@ from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-
-
-
 from article.models import (
     Article as ArticleModel,
     Comment as CommentModel,
@@ -25,7 +22,6 @@ from article.serializers import (
     CommentSerializer,
 )
 
-
 # 게시글 페이지네이션 리스팅
 class ArticlePagination(APIView, LimitOffsetPagination):
     def get(self, request, format=None):
@@ -41,8 +37,6 @@ class CommentPagination(APIView, LimitOffsetPagination):
         results = self.paginate_queryset(comments, request, view=self)
         serializer = CommentSerializer(results, many=True)
         return self.get_paginated_response(serializer.data)
-
-
 
 class ArticleView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -153,13 +147,6 @@ class CommentView(APIView):
             return Response({'message': f'{comment_author}님의 댓글이 삭제되었습니다.'})
         else:
             return Response({'error': '댓글 삭제 권한이 없습니다'})
-    
-
-# class CommentUserView(APIView):
-#     def get(self, request, comment_id):
-#         comment_detail = CommentModel.objects.get(id=comment_id)
-#         comment_detail_user = comment_detail.user.username
-#         return Response(comment_detail_user)
 
 # 게시글 공감
 class ArticleLikeView(APIView):
@@ -188,8 +175,6 @@ class ArticleLikeView(APIView):
             article_like.save()
             return Response({'message': f'{request.user}님께서 {article_title.article_title}에 {article_like.category}하셨습니다.'})
 
-
-
 # 게시글 투표
 class ArticleVoteBridgeView(APIView):
     authentication_classes = [JWTAuthentication]
@@ -215,7 +200,6 @@ class ArticleVoteBridgeView(APIView):
         )
             article_vote.save()
             return Response({'message': f'{request.user}님께서 {article_title.article_title}에 {article_vote.category} 투표하셨습니다.'})
-
 
 # 댓글 공감
 class CommentLikeView(APIView):
@@ -246,7 +230,6 @@ class CommentLikeView(APIView):
             comment_like.save()
             return Response({'message': f'{request.user}님께서 {contents[0:10]}...댓글에 {comment_like.category}하셨습니다.'})
 
-
 # 공감순 게시글 탑3 리스팅
 class MostLikedArticleView(APIView):
     def get(self, request):
@@ -266,8 +249,6 @@ class MostLikedArticleView(APIView):
         ranking = [first, second, third]
         article_rank = ArticleModel.objects.filter(id__in = ranking)
         return Response(ArticleSerializer(article_rank, many=True).data)
-
-       
 
 # 공감순 댓글 탑3 리스팅
 class MostLikedCommentView(APIView):
@@ -309,7 +290,6 @@ class MostVotedArticleView(APIView):
         article_rank = ArticleModel.objects.filter(id__in = ranking)
         return Response(ArticleSerializer(article_rank, many=True).data)
 
-
 class SearchResult(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -332,5 +312,19 @@ class SearchResult(APIView):
             searched_titles = ArticleModel.objects.filter(article_title__contains=keywords)
             result = ArticleSerializer(searched_titles, many=True).data
             return Response(result) 
-        
-        
+
+
+# 게시판별 아티클 리스팅
+class ArticleByBoard(APIView):
+
+    def get(self, request):
+        boards = request.query_params.getlist('boards', '')
+        results = []
+        for board in boards:
+            articles = ArticleModel.objects.filter(board=board).order_by("-id")[:5]
+            result = ArticleSerializer(articles, many=True).data
+            results_data = {
+                f"{board}" : result
+            }
+            results.append(results_data)
+        return Response(results)
