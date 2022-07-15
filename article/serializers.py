@@ -7,6 +7,7 @@ from article.models import (
     Vote as VoteModel,
 )
 from user.models import User as User
+from user.serializers import UserSerializer
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -33,6 +34,14 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class ArticleSerializer(serializers.ModelSerializer):
     comment_set = CommentSerializer(many=True)
+    author = serializers.SerializerMethodField()
+    category = serializers.SerializerMethodField()
+
+    def get_category(self,obj):
+        return obj.article_category.name
+
+    def get_author(self,obj):
+        return obj.article_author.username
 
     # custum update
     def update(self, instance, validated_data):
@@ -47,23 +56,7 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ArticleModel
-        fields = ['id','article_author','article_title','article_image',
+        fields = ['id','author','article_title','category','article_image', 'board',
         'article_contents','article_post_date',
         'article_exposure_date','comment_set'
         ]
-# class LikeSerializer(serializers.ModelField):
-#     comment_set = CommentSerializer(many=True)
-#     article_set = ArticleSerializer(many=True)
-
-#     class Meta:
-#         model = ArticleLikeModel
-#         fields = ['id', 'like_user', 'like', 'like_category', 'like_comment', 'like_article',
-#         'comment_set', 'article_set']
-# class LikeSerializer(serializers.ModelField):
-#     comment_set = CommentSerializer(many=True)
-#     article_set = ArticleSerializer(many=True)
-
-#     class Meta:
-#         model = CommentLikeModel
-#         fields = ['id', 'like_user', 'like', 'like_category', 'like_comment', 'like_article',
-#         'comment_set', 'article_set']
