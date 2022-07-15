@@ -266,7 +266,10 @@ class MostLikedCommentView(APIView):
         first = like_rank[0][0]
         second = like_rank[1][0]
         third = like_rank[2][0]
-        ranking = [first, second, third]
+        forth = like_rank[3][0]
+        fifth = like_rank[4][0]
+        sixth = like_rank[5][0]
+        ranking = [first, second, third, forth, fifth, sixth]
         comment_rank = CommentModel.objects.filter(id__in = ranking)
         return Response(CommentSerializer(comment_rank, many=True).data)
 
