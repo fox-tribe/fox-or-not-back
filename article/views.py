@@ -297,18 +297,25 @@ class SearchResult(APIView):
     permission_classes = [permissions.AllowAny]
 
     # 검색 결과 리스팅
-    def get(self, request):
+    def post(self, request):
         keywords = request.data.get('search')
         type= request.data.get('type')
         # 내용 검색
-        if type == 1:
+        if type == '내용':
             searched_contents = ArticleModel.objects.filter(article_contents__contains=keywords)
             result = ArticleSerializer(searched_contents, many=True).data
             return Response(result) 
         # 작성자 검색
-        elif type == 2:
-            searched_authors = ArticleModel.objects.filter(article_author=keywords)
+        elif type == '작성자':
+            searched_authors = ArticleModel.objects.filter(article_author__username=keywords)
             result = ArticleSerializer(searched_authors, many=True).data
+            return Response(result) 
+        # 제목 + 내용 검색
+        elif type == '제목+내용':
+            searched_contents = ArticleModel.objects.filter(article_contents__contains=keywords)
+            searched_titles = ArticleModel.objects.filter(article_title__contains=keywords)
+            searched = searched_contents.union(searched_titles) 
+            result = ArticleSerializer(searched, many=True).data
             return Response(result) 
         # 제목 검색
         else:

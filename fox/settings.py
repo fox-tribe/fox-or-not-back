@@ -237,3 +237,6 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = "user.User"
+
+
+DATETIME_FORMAT = ['%Y/%m/%d %H:%M']
