@@ -3,15 +3,11 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
-<<<<<<< HEAD
+
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
-
-
-
-=======
 from rest_framework_simplejwt.authentication import JWTAuthentication
->>>>>>> ae6b130bbf0d662e2ef8f22d41a6fcd17ce71fbf
+
 
 from article.models import (
     Article as ArticleModel,
@@ -23,7 +19,7 @@ from article.models import (
     CommentLikeBridge,
     ArticleLikeBridge,
     ArticleVoteBridge,
-    Vote as VoteModel,
+    Vote as VoteModel
 )
 from article.serializers import (
     ArticleSerializer,
@@ -50,8 +46,6 @@ class ArticleView(APIView):
     permission_classes = [permissions.AllowAny]
 
     # 모든 게시글 리스팅
-
-    @permission_classes([IsAuthenticated])
     def get(self, request):
         articles = list(ArticleModel.objects.all().order_by("-id"))
         result = ArticleSerializer(articles, many=True).data
@@ -109,7 +103,7 @@ class ArticleView(APIView):
 # article detail 페이지 article/<obj_id>/detail/
 class ArticleDetailView(APIView):
 
-    def get(self, request, obj_id):        
+    def get(self, request, obj_id):      
         article = ArticleModel.objects.get(id=obj_id)
         return Response(ArticleSerializer(article).data)
 class CommentView(APIView):
