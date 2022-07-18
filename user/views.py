@@ -22,6 +22,7 @@ class UserView(APIView):
 
     # 회원가입
     def post(self, request):
+        username = request.data.get("username")
         password = request.data.pop("password")
         password2 = request.data.pop("password2")
 
@@ -30,6 +31,8 @@ class UserView(APIView):
             user.set_password(password)
             user.save()
             return Response({"message": "회원가입 완료!!"}, status=status.HTTP_200_OK)
+        elif UserModel.objects.get(username=username):
+            return Response({"message":"중복된 아이디입니다."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response({"error": "비밀번호가 일치하지 않습니다."})
 
