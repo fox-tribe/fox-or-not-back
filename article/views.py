@@ -194,7 +194,7 @@ class ArticleVoteBridgeView(APIView):
         if request.user.id in all_id:
             article_vote = ArticleVoteBridge.objects.get(user_id=request.user.id)
             article_vote.delete()
-            return Response({'message': f'{request.user}님께서 {article_title.article_title}에 투표를 취소하셨습니다.'})
+            return Response({'message': f'{article_vote.category} 투표 취소..'})
         else:
             article_vote = ArticleVoteBridge(
                 article_id = article_id,
@@ -203,7 +203,7 @@ class ArticleVoteBridgeView(APIView):
                 category = request.data.get('category',"")
         )
             article_vote.save()
-            return Response({'message': f'{request.user}님께서 {article_title.article_title}에 {article_vote.category} 투표하셨습니다.'})
+            return Response({'message': f'{article_vote.category}에 한표!'})
 
 # 댓글 공감
 class CommentLikeView(APIView):
