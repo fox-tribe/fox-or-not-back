@@ -131,6 +131,7 @@ DATABASES = {
 
 # settings.py
 REST_FRAMEWORK = {
+    'DATETIME_FORMAT': "%Y/%m/%d %H:%M",
     'DEFAULT_PERMISSION_CLASSES': [ # 기본적인 view 접근 권한 지정
         'rest_framework.permissions.AllowAny'
     ],
@@ -181,7 +182,7 @@ PASSWORD_HASHERS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
@@ -239,4 +240,3 @@ SIMPLE_JWT = {
 AUTH_USER_MODEL = "user.User"
 
 
-DATETIME_FORMAT = ['%Y/%m/%d %H:%M']

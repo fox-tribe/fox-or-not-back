@@ -210,23 +210,36 @@ class CommentLikeView(APIView):
         comment = CommentModel.objects.get(id=comment_id)
         contents = comment.comment_contents
         all = list(CommentLikeBridge.objects.all().values())
-        print(all)
         all_id = []
         for obj in all:
             all_id.append(obj['user_id'])
         
 
         if request.user.id in all_id:
-            comment_like = CommentLikeBridge.objects.get(user_id=request.user.id)
-            comment_like.delete()
-            return Response({'message': f'{request.user}님께서 {contents[0:10]}...댓글에 공감을 취소하셨습니다.'})
+            # for i in all:
+            #     id = i['comment_id']                
+            try:
+                CommentLikeBridge.objects.get(comment_id=comment_id)
+                comment_like = CommentLikeBridge.objects.get(comment_id=comment_id)
+                if comment_like.user_id == request.user.id:
+                    comment_like.delete()
+                    return Response({'message': f'{request.user}님께서 {contents[0:10]}...댓글에 공감을 취소하셨습니다.'})
+            except:
+                comment_like = CommentLikeBridge(
+                    comment_id = comment_id,
+                    user_id = request.user.id,
+                    like_id = like.id,
+                    category = request.data.get('category')
+            )
+                comment_like.save()
+                return Response({'message': f'{request.user}님께서 {contents[0:10]}...댓글에 {comment_like.category}하셨습니다.'})
         else:
             comment_like = CommentLikeBridge(
                 comment_id = comment_id,
                 user_id = request.user.id,
                 like_id = like.id,
                 category = request.data.get('category')
-        )
+            )
             comment_like.save()
             return Response({'message': f'{request.user}님께서 {contents[0:10]}...댓글에 {comment_like.category}하셨습니다.'})
 
