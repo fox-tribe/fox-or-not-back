@@ -1,7 +1,5 @@
-from contextlib import nullcontext
 from django.db import models
 from user.models import User
-from django.utils import timezone
 
 
 class ArticleLike(models.Model):
@@ -36,15 +34,6 @@ class Comment(models.Model):
 
     def __str__(self):
        return f"{self.comment_author.username} 님이 작성하신 댓글입니다."
-
-# class Vote(models.Model):
-#     vote_user = models.ForeignKey('user.User', verbose_name="투표한 유저", on_delete=models.CASCADE)
-#     vote_article = models.ForeignKey('Article', verbose_name="투표한 게시글", on_delete=models.CASCADE)
-#     vote = models.BooleanField("투표여부")
-#     vote_category = models.CharField("투표 종류", max_length=50)
-
-#     def __str__(self):
-#        return f"{self.vote_user.username}님이 {self.vote_article}에 {self.vote_category}투표했습니다."
 
 class Board(models.Model):
     name = models.CharField("게시판 이름", max_length=50, default="")

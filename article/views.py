@@ -1,3 +1,4 @@
+from unicodedata import category
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework import status
 from rest_framework.views import APIView
@@ -183,6 +184,22 @@ class ArticleLikeView(APIView):
 class ArticleVoteBridgeView(APIView):
     authentication_classes = [JWTAuthentication]
 
+    # 게시글 투표 카운트
+    def get(self, request, article_id):
+        votes = ArticleVoteBridge.objects.filter(article_id=article_id)
+        votes = list(votes.values())
+        print(votes)
+        count = dict(fox=0, green=0, miss=0)
+        print(count)
+        for vote in votes:
+            if vote['category'] == '폭스입니다':
+                count['fox'] += 1
+            elif vote['category'] == '그린라이트':
+                count['green'] += 1
+            else:
+                count['miss'] += 1
+        return Response(count)
+
     def post(self, request, article_id):
         vote = VoteModel.objects.create()
         article_title = ArticleModel.objects.get(id=article_id)
@@ -208,6 +225,11 @@ class ArticleVoteBridgeView(APIView):
 # 댓글 공감
 class CommentLikeView(APIView):
     authentication_classes = [JWTAuthentication]
+
+    # 댓글 공감 카운트
+    def get(self, request, comment_id):
+        like_count = CommentLikeBridge.objects.filter(comment_id=comment_id).count()
+        return Response(like_count)
 
     def post(self, request, comment_id):
         like = CommentLike.objects.create()
@@ -246,6 +268,7 @@ class CommentLikeView(APIView):
             )
             comment_like.save()
             return Response({'message': f'{request.user}님께서 {contents[0:10]}...댓글에 {comment_like.category}하셨습니다.'})
+
 
 # 공감순 게시글 탑3 리스팅
 class MostLikedArticleView(APIView):
@@ -355,3 +378,5 @@ class ArticleByBoard(APIView):
             }
             results.append(results_data)
         return Response(results)
+
+
