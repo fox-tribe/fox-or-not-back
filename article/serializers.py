@@ -12,9 +12,13 @@ from user.serializers import UserSerializer
 
 class CommentSerializer(serializers.ModelSerializer):
     comments_related_article = serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
 
     def get_comments_related_article(self,obj):
         return obj.article.id
+
+    def get_author(self,obj):
+        return obj.comment_author.username
 
     # custum update
     def update(self, instance, validated_data):        
@@ -28,7 +32,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta :
         model = CommentModel
-        fields = ['id', 'article', 'comment_author', 'comment_contents', 'comments_related_article']
+        fields = ['id', 'article', 'author', 'comment_created_at', 'comment_contents', 'comments_related_article']
 
 
 

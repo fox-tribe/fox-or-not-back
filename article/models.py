@@ -30,8 +30,8 @@ class Comment(models.Model):
     comment_author = models.ForeignKey('user.User', verbose_name="사용자", on_delete=models.CASCADE)
     article = models.ForeignKey(Article, verbose_name="게시글", on_delete=models.CASCADE)
     comment_contents = models.TextField("내용", max_length=100)
-    comment_created_at = models.DateTimeField("생성시간", auto_now_add=True)
-    comment_updated_at = models.DateTimeField("수정시간",auto_now = True)
+    comment_created_at = models.DateTimeField("생성시간", auto_now_add=True,)
+    comment_updated_at = models.DateTimeField("수정시간",auto_now = True,)
     comment_like = models.ManyToManyField(CommentLike, through='CommentLikeBridge')
 
     def __str__(self):
