@@ -188,9 +188,7 @@ class ArticleVoteBridgeView(APIView):
     def get(self, request, article_id):
         votes = ArticleVoteBridge.objects.filter(article_id=article_id)
         votes = list(votes.values())
-        print(votes)
         count = dict(fox=0, green=0, miss=0)
-        print(count)
         for vote in votes:
             if vote['category'] == '폭스입니다':
                 count['fox'] += 1
@@ -378,5 +376,4 @@ class ArticleByBoard(APIView):
             }
             results.append(results_data)
         return Response(results)
-
 

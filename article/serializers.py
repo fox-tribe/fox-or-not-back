@@ -4,7 +4,6 @@ from article.models import (
     Comment as CommentModel,
     CommentLikeBridge,
     ArticleVoteBridge,
-
 )
 from user.models import User as User
 from user.serializers import UserSerializer
@@ -16,7 +15,6 @@ class CommentSerializer(serializers.ModelSerializer):
 
     def get_comments_related_article(self,obj):
         return obj.article.id
-
     def get_author(self,obj):
         return obj.comment_author.username
 
@@ -25,7 +23,7 @@ class CommentSerializer(serializers.ModelSerializer):
         return like_count
 
     # custum update
-    def update(self, instance, validated_data):        
+    def update(self, instance, validated_data):
         for key, value in validated_data.items():
             if key == "comment_author":
                 instance.user(value)
@@ -33,12 +31,9 @@ class CommentSerializer(serializers.ModelSerializer):
             setattr(instance, key, value)
         instance.save()
         return instance
-
     class Meta :
         model = CommentModel
         fields = ['id', 'article', 'author', 'comment_created_at', 'comment_contents', 'comments_related_article', 'count']
-
-
 
 class ArticleSerializer(serializers.ModelSerializer):
     comment_set = CommentSerializer(many=True)
@@ -46,10 +41,8 @@ class ArticleSerializer(serializers.ModelSerializer):
     category = serializers.SerializerMethodField()
     vote = serializers.SerializerMethodField()
 
-
     def get_category(self,obj):
         return obj.article_category.name
-
     def get_author(self,obj):
         return obj.article_author.username
 
@@ -65,17 +58,16 @@ class ArticleSerializer(serializers.ModelSerializer):
             else:
                 vote_count['miss'] += 1
         return vote_count
+
     # custum update
     def update(self, instance, validated_data):
         for key, value in validated_data.items():
             if key == "article_author":
                 instance.set_author(value)
                 continue
-
             setattr(instance, key, value)
         instance.save()
         return instance
-
     class Meta:
         model = ArticleModel
         fields = ['id','author','article_title','category','article_image', 'board', 'vote',
