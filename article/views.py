@@ -206,10 +206,19 @@ class ArticleVoteBridgeView(APIView):
         all_id = []
         for obj in all:
             all_id.append(obj['user_id'])
-        if request.user.id in all_id:
-            article_vote = ArticleVoteBridge.objects.get(user_id=request.user.id)
+        article_vote = ArticleVoteBridge.objects.get(user_id=request.user.id)
+        if article_vote.category != request.data.get('category'):
             article_vote.delete()
-            return Response({'message': f'{article_vote.category} 투표 취소..'})
+            new_vote = ArticleVoteBridge(
+            article_id = article_id,
+            user_id = request.user.id,
+            vote_id = vote.id,
+            category = request.data.get('category',"")
+        )
+            new_vote.save()
+            return Response({'message': f'{new_vote.category}로 재투표!'})
+        elif article_vote.category == request.data.get('category'):
+            return Response({'message': '이미 투표하셨습니다.'})
         else:
             article_vote = ArticleVoteBridge(
                 article_id = article_id,
@@ -281,10 +290,12 @@ class MostLikedArticleView(APIView):
             like_counts.append(like_count)
         count_list = { name:value for name, value in zip(articles_id, like_counts)}
         like_rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True)[:3]
-        first = like_rank[0][0]
-        second = like_rank[1][0]
-        third = like_rank[2][0]
-        ranking = [first, second, third]
+        ranking = []
+        for rank in range(len(like_rank)):
+            if like_rank[rank][0] is not None: 
+                ranking.append(like_rank[rank][0])
+            else:
+                pass
         article_rank = ArticleModel.objects.filter(id__in = ranking)
         return Response(ArticleSerializer(article_rank, many=True).data)
 
@@ -367,9 +378,10 @@ class ArticleByBoard(APIView):
 
     def get(self, request):
         boards = request.query_params.getlist('boards', '')
+        print(boards)
         results = []
         for board in boards:
-            articles = ArticleModel.objects.filter(board=board).order_by("-id")[:5]
+            articles = ArticleModel.objects.filter(board__name=board).order_by("-id")[:5]
             result = ArticleSerializer(articles, many=True).data
             results_data = {
                 f"{board}" : result
