@@ -47,7 +47,7 @@ class UserView(APIView):
 
 class UserApiView(APIView):
     # permission_classes = [permissions.AllowAny]
-    
+
     # 로그인
     def post(self, request):
         username = request.data.get('username', '')

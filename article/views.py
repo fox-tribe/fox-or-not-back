@@ -58,12 +58,12 @@ class ArticleView(APIView):
             return Response({"error":"글 작성을 위해 로그인을 해주세요."})
         else:
             board = BoardModel.objects.get(name=request.data.get('board'))
-            category = CategoryModel.objects.get(name=request.data.get('article_category'))
+            category = CategoryModel.objects.get(name=request.data.get('article_category',))
             article = ArticleModel.objects.create(
                 article_author = request.user,
                 article_title = request.data.get('article_title',''),
                 article_contents = request.data.get('article_contents',''),
-                article_image = request.FILES,
+                article_image = request.FILES['article_image'],
                 article_exposure_date = request.data.get('article_exposure_date',''),
                 board = board,
                 article_category = category,
