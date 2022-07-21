@@ -108,6 +108,7 @@ class ArticleDetailView(APIView):
         article = ArticleModel.objects.get(id=obj_id)
         return Response(ArticleSerializer(article).data)
 class CommentView(APIView):
+    
 
     def get(self, request, obj_id):
         return Response(CommentSerializer(obj_id).data)
@@ -206,29 +207,38 @@ class ArticleVoteBridgeView(APIView):
         all_id = []
         for obj in all:
             all_id.append(obj['user_id'])
-        article_vote = ArticleVoteBridge.objects.get(user_id=request.user.id)
-        if article_vote.category != request.data.get('category'):
-            article_vote.delete()
-            new_vote = ArticleVoteBridge(
-            article_id = article_id,
-            user_id = request.user.id,
-            vote_id = vote.id,
-            category = request.data.get('category',"")
-        )
-            new_vote.save()
-            return Response({'message': f'{new_vote.category}로 재투표!'})
-        elif article_vote.category == request.data.get('category'):
-            return Response({'message': '이미 투표하셨습니다.'})
-        else:
+        try:
+            article_vote = ArticleVoteBridge.objects.get(user_id=request.user.id)
+            if article_vote.category != request.data.get('category'):
+                article_vote.delete()
+                new_vote = ArticleVoteBridge(
+                article_id = article_id,
+                user_id = request.user.id,
+                vote_id = vote.id,
+                category = request.data.get('category',"")
+            )
+                new_vote.save()
+                return Response({'message': f'{new_vote.category}로 재투표!'})
+            elif article_vote.category == request.data.get('category'):
+                return Response({'message': '이미 투표하셨습니다.'})
+            else:
+                article_vote = ArticleVoteBridge(
+                    article_id = article_id,
+                    user_id = request.user.id,
+                    vote_id = vote.id,
+                    category = request.data.get('category',"")
+            )
+                article_vote.save()
+                return Response({'message': f'{article_vote.category}에 한표!'})
+        except:
             article_vote = ArticleVoteBridge(
                 article_id = article_id,
                 user_id = request.user.id,
                 vote_id = vote.id,
                 category = request.data.get('category',"")
-        )
+            )
             article_vote.save()
             return Response({'message': f'{article_vote.category}에 한표!'})
-
 # 댓글 공감
 class CommentLikeView(APIView):
     authentication_classes = [JWTAuthentication]
