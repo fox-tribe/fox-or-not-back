@@ -37,7 +37,29 @@ class UserView(APIView):
             return Response({"error": "비밀번호가 일치하지 않습니다."})
 
     def put(self, request):
-        return Response({'message': 'put method!!'})
+        user = UserModel.objects.get(username=request.user)
+        password = request.data.pop("password")
+        user.password = ""
+        user.set_password(password)
+        user_serializer = UserSerializer(user, data=request.data, partial=True, context={"request": request})
+
+        if user_serializer.is_valid():
+            user_serializer.save()
+            return Response(user_serializer.data, status=status.HTTP_200_OK)
+        return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+        # original_username = request.user
+        # username = request.data.get("username")
+        # password = request.data.pop("password")
+        # nickname = request.data.get("nickname")
+        # gender = request.data.get("gender")
+
+        # user = UserModel(**request.data)
+        # user.set_password(password)
+
+        # return Response({'message': 'put method!!'})
 
 
     def delete(self, request):
@@ -79,5 +101,6 @@ class OnlyAuthenticatedUserView(APIView):
         user = request.user
         print(f"user 정보 : {user}")
         if not user:
-            return Response({"error": "접근 권한이 없습니다."}, status=status.HTTP_401_UNAUTHORIZED)
-        return Response({"message": "Accepted"})
+            return Response({"error": "접근 권한이 없습니다."}, status=status.HTTP_401_UNAUTHORIZED)            
+        return Response(UserSerializer(user).data)
+        
