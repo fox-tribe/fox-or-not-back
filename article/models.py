@@ -12,7 +12,6 @@ class Vote(models.Model):
 class Article(models.Model):
     article_author = models.ForeignKey('user.User', verbose_name="작성자", on_delete=models.CASCADE)
     board = models.ForeignKey('Board', verbose_name="해당 게시판", on_delete=models.CASCADE)
-    article_category = models.ForeignKey('Category', verbose_name="카테고리 종류", on_delete=models.CASCADE, null=True)
     article_title = models.CharField('게시물 제옥', max_length=50)
     article_contents = models.TextField('게시물 내용', max_length=500)
     article_image = models.ImageField('이미지', upload_to="", blank=True)
@@ -37,12 +36,6 @@ class Comment(models.Model):
 
 class Board(models.Model):
     name = models.CharField("게시판 이름", max_length=50, default="")
-
-    def __str__(self):
-       return f"{self.name}"
-
-class Category(models.Model):
-    name = models.CharField("게시글 카테고리 이름", max_length=50, default="")
 
     def __str__(self):
        return f"{self.name}"

@@ -14,7 +14,6 @@ from article.models import (
     Article as ArticleModel,
     Comment as CommentModel,
     Board as BoardModel,
-    Category as CategoryModel,
     ArticleLike,
     CommentLike,
     CommentLikeBridge,
@@ -58,7 +57,6 @@ class ArticleView(APIView):
             return Response({"error":"글 작성을 위해 로그인을 해주세요."})
         else:
             board = BoardModel.objects.get(name=request.data.get('board'))
-            category = CategoryModel.objects.get(name=request.data.get('article_category',))
             article = ArticleModel.objects.create(
                 article_author = request.user,
                 article_title = request.data.get('article_title',''),
@@ -66,7 +64,6 @@ class ArticleView(APIView):
                 article_image = request.FILES['article_image'],
                 article_exposure_date = request.data.get('article_exposure_date',''),
                 board = board,
-                article_category = category,
             )
             if len(request.data.get('article_title','')) <= 1 :
                 return Response({"error":"title이 1자 이하라면 게시글을 작성할 수 없습니다."})
