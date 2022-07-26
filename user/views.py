@@ -38,7 +38,7 @@ class UserView(APIView):
 
     def put(self, request):
         user = UserModel.objects.get(username=request.user)
-        if UserModel.objects.filter(nickname=request.data.get("nickname")) is not None:
+        if UserModel.objects.filter(nickname=request.data.get("nickname")) == True :
             return Response({"error":"중복된 닉네임입니다."})
         else:
             pass

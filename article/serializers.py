@@ -12,11 +12,16 @@ class CommentSerializer(serializers.ModelSerializer):
     comments_related_article = serializers.SerializerMethodField()
     author = serializers.SerializerMethodField()
     count = serializers.SerializerMethodField()
+    nickname = serializers.SerializerMethodField()
 
     def get_comments_related_article(self,obj):
         return obj.article.id
+
     def get_author(self,obj):
         return obj.comment_author.username
+
+    def get_nickname(self,obj):
+        return obj.comment_author.nickname
 
     def get_count(self,obj):
         like_count = CommentLikeBridge.objects.filter(comment_id=obj.id).count()
@@ -33,16 +38,20 @@ class CommentSerializer(serializers.ModelSerializer):
         return instance
     class Meta :
         model = CommentModel
-        fields = ['id', 'article', 'author', 'comment_created_at', 'comment_contents', 'comments_related_article', 'count']
+        fields = ['id', 'article', 'author','nickname', 'comment_created_at', 'comment_contents', 'comments_related_article', 'count']
 
 class ArticleSerializer(serializers.ModelSerializer):
     comment_set = CommentSerializer(many=True)
     author = serializers.SerializerMethodField()
     vote = serializers.SerializerMethodField()
+    nickname = serializers.SerializerMethodField()
 
 
     def get_author(self,obj):
         return obj.article_author.username
+
+    def get_nickname(self,obj):
+        return obj.article_author.nickname
 
     def get_vote(self,obj):
         votes = ArticleVoteBridge.objects.filter(article_id=obj.id)
@@ -68,8 +77,8 @@ class ArticleSerializer(serializers.ModelSerializer):
         return instance
     class Meta:
         model = ArticleModel
-        fields = ['id','author','article_title','article_image', 'board', 'vote',
+        fields = ['id','author','nickname','article_title','article_image', 'board', 'vote',
         'article_contents','article_post_date',
-        'article_exposure_date','comment_set'
+        'article_exposure_date','comment_set', 
         ]
 
