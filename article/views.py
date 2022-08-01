@@ -260,12 +260,14 @@ class ArticleVoteBridgeView(APIView):
         vote = VoteModel.objects.create()
         article_title = ArticleModel.objects.get(id=article_id)
         all = list(ArticleVoteBridge.objects.all().values())
-        
+        article_vote = ArticleVoteBridge.objects.filter(user_id=request.user.id)
+        vote_article = article_vote.filter(article_id=article_id)
+        vote_article.delete()
         all_id = []
         for obj in all:
             all_id.append(obj['user_id'])
         try:
-            article_vote = ArticleVoteBridge.objects.get(user_id=request.user.id)
+            article_vote = ArticleVoteBridge.objects.filter(user_id=request.user.id)
             if article_vote.category != request.data.get('category'):
                 article_vote.delete()
                 new_vote = ArticleVoteBridge(
