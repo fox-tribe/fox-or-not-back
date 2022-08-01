@@ -45,7 +45,11 @@ class ArticleSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
     vote = serializers.SerializerMethodField()
     nickname = serializers.SerializerMethodField()
+    board = serializers.SerializerMethodField()
 
+
+    def get_board(self,obj):
+        return obj.board.name
 
     def get_author(self,obj):
         return obj.article_author.username
@@ -64,6 +68,7 @@ class ArticleSerializer(serializers.ModelSerializer):
                 vote_count['green'] += 1
             else:
                 vote_count['miss'] += 1
+        vote_count['count'] = vote_count['fox'] + vote_count['green'] + vote_count['miss']
         return vote_count
 
     # custum update

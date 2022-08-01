@@ -1,9 +1,11 @@
 from unicodedata import category
+from django.core.paginator import Paginator
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
+from urllib import parse
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
@@ -25,14 +27,62 @@ from article.serializers import (
     ArticleSerializer,
     CommentSerializer,
 )
-
-# 게시글 페이지네이션 리스팅
+# 게시판 별 게시글 페이지네이션
 class ArticlePagination(APIView, LimitOffsetPagination):
     def get(self, request, format=None):
-        articles = ArticleModel.objects.all()
-        results = self.paginate_queryset(articles, request, view=self)
-        serializer = ArticleSerializer(results, many=True)
-        return self.get_paginated_response(serializer.data)
+        board = request.query_params.getlist('board')[0]
+        page = int(request.query_params.getlist('page')[0])
+        # if board == 'HOT':
+        #     articles = ArticleModel.objects.filter(board__name=board)
+        #     print(articles)
+        articles = ArticleModel.objects.filter(board__name=board).order_by("-id")[((page-1)*10):(page*10)]
+        if board == 'HOT':
+            all = list(ArticleModel.objects.all().values())
+            articles_id = []
+            for article in all:
+                articles_id.append(article['id'])
+            vote_counts = []
+            for id in articles_id:
+                vote_count = ArticleVoteBridge.objects.filter(article_id=id).count()
+                if vote_count >= 1:
+                    num = 0
+                    num = num + 1
+                vote_counts.append(vote_count)
+            print(num)
+            count_list = {name:value for name, value in zip(articles_id, vote_counts)}
+            vote_rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True)[:num]
+            ranking = []
+            for i in range(num):
+                ranking.append(vote_rank[i][0])
+            article_rank = ArticleModel.objects.filter(id__in = ranking)
+            results = self.paginate_queryset(article_rank, request, view=self)
+            serializer = ArticleSerializer(results, many=True)
+            return self.get_paginated_response(serializer.data)
+        else:
+            results = self.paginate_queryset(articles, request, view=self)
+            serializer = ArticleSerializer(results, many=True)
+            return self.get_paginated_response(serializer.data)
+
+# 투표순 탑3 리스팅
+class MostVotedArticleView(APIView):
+    def get(self, request):
+        articles = list(ArticleModel.objects.all().values())
+        articles_id = []
+        for article in articles:
+            articles_id.append(article['id'])
+        vote_counts = []
+        for id in articles_id:
+            vote_count = ArticleVoteBridge.objects.filter(article_id=id).count()
+            vote_counts.append(vote_count)
+        count_list = { name:value for name, value in zip(articles_id, vote_counts)}
+        vote_rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True)[:3]
+        first = vote_rank[0][0]
+        second = vote_rank[1][0]
+        third = vote_rank[2][0]
+        ranking = [first, second, third]
+        article_rank = ArticleModel.objects.filter(id__in = ranking)
+        return Response(ArticleSerializer(article_rank, many=True).data)
+
 
 # 댓글 페이지네이션 리스팅
 class CommentPagination(APIView, LimitOffsetPagination):
@@ -390,12 +440,11 @@ class SearchResult(APIView):
             return Response(result) 
 
 
-# 게시판별 아티클 리스팅
+# 메인페이지 게시판별 아티클 리스팅
 class ArticleByBoard(APIView):
 
     def get(self, request):
         boards = request.query_params.getlist('boards', '')
-        print(boards)
         results = []
         for board in boards:
             articles = ArticleModel.objects.filter(board__name=board).order_by("-id")[:5]
