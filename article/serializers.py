@@ -38,7 +38,7 @@ class CommentSerializer(serializers.ModelSerializer):
         return instance
     class Meta :
         model = CommentModel
-        fields = ['id', 'article', 'author','nickname', 'comment_created_at', 'comment_contents', 'comments_related_article', 'count']
+        fields = ['id', 'article', 'comment_author', 'author','nickname', 'comment_created_at', 'comment_contents', 'comments_related_article', 'count']
 
 class ArticleSerializer(serializers.ModelSerializer):
     comment_set = CommentSerializer(many=True)
@@ -82,7 +82,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         return instance
     class Meta:
         model = ArticleModel
-        fields = ['id','author','nickname','article_title','article_image', 'board', 'vote',
+        fields = ['id','author','article_author','nickname','article_title','article_image', 'board', 'vote',
         'article_contents','article_post_date',
         'article_exposure_date','comment_set', 
         ]
