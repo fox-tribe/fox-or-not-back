@@ -95,4 +95,4 @@
 [![IMAGE ALT TEXT HERE](https://iboxcomein.com/wp-content/uploads/2021/08/%EC%9C%A0%ED%8A%9C%EB%B8%8C_%EB%A1%9C%EA%B3%A0.png)](https://www.youtube.com/watch?v=1MRtEahLy1I)
 
 
-![Footer](https://capsule-render.vercel.app/api?type=waving&color=9370DB&height=200&section=footer)
+![Footer](https://capsule-render.vercel.app/api?type=waving&color=FF8339&height=200&section=footer)
