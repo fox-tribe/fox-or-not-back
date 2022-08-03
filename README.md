@@ -1,7 +1,7 @@
 ![header](https://capsule-render.vercel.app/api?type=waving&color=FF8339&height=150&section=header&text=Painting%20Production%20Project&fontSize=30&style="color:white")
 
-## 🦊 프로젝트명\_ 너 그거 폭스야
-### “주변인의 이 행동 너무 헷갈려요… 오해일까요?”🤔 알쏭달쏭한 이성의 행동에 답을 알려주는 커뮤니티 만들기😽
+## 🦊 너 그거 폭스야
+##### “주변인의 이 행동 너무 헷갈려요… 오해일까요?”🤔 알쏭달쏭한 이성의 행동에 답을 알려주는 커뮤니티 만들기😽
 
 ## 목표
 -  머신러닝을 활용하여 커뮤니티 내 필터링 적용하기
@@ -46,11 +46,13 @@
 3. 게시판리스팅기능
 4. 'HOT 게시판' 공감순 리스팅
 <br>
+
 **signup.html**
 ![Image 029](https://user-images.githubusercontent.com/102009707/182566222-dbf07a85-10d1-4d7e-8493-c29091947c42.png)
 <br>
 1. 회원가입기능
 <br>
+
 **detail.html**
 ![Image 030](https://user-images.githubusercontent.com/102009707/182566438-3cd11348-5664-4e70-8741-6a05c7c21076.png)
 <br>
@@ -60,17 +62,20 @@
 3. 공감기능
 4. 투표기능
 <br>
+
 **posting.html**
 ![Image 035](https://user-images.githubusercontent.com/102009707/182569714-32e3d47f-245a-4f97-be54-e1d475c4537d.png)
 <br>
 1. 게시물 작성기능
 <br>
+
 **mypage.html**
 ![Image 033](https://user-images.githubusercontent.com/102009707/182567996-9f804481-d9b0-4571-98d9-5c7d0a67bd1c.png)
 <br>
 1. 내가 쓴 글 및 댓글 리스팅 클릭시 이동
 2. 닉네임, 성별 및 비밀번호 변경 및 중복확인과 현재정보확인
 <br>
+
 **board.html**
 ![Image 038](https://user-images.githubusercontent.com/102009707/182572467-235fa881-ac9e-49aa-88d2-4659b9339f37.png)
 <br>
@@ -78,6 +83,7 @@
 2. 페이지네이션기능
 3. 검색기능
 <br>
+
 **search_result.html**
 ![Image 037](https://user-images.githubusercontent.com/102009707/182571855-9e76fa81-d6f3-40ae-a699-ccf83e92fb68.png)
 <br>
