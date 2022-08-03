@@ -64,7 +64,7 @@
 <br>
 
 **posting.html**<br>
-![Image 035](https://user-images.githubusercontent.com/102009707/182569714-32e3d47f-245a-4f97-be54-e1d475c4537d.png)
+![Image 041](https://user-images.githubusercontent.com/102009707/182575775-882993dc-c36e-453d-b216-59de12935e56.png)
 <br>
 1. 게시물 작성기능
 <br>
@@ -77,7 +77,7 @@
 <br>
 
 **board.html**<br>
-![Image 038](https://user-images.githubusercontent.com/102009707/182572467-235fa881-ac9e-49aa-88d2-4659b9339f37.png)
+![Uploading Image 041.png…]()
 <br>
 1. 각 게시판별 게시물 리스팅
 2. 페이지네이션기능
