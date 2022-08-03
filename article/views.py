@@ -380,7 +380,7 @@ class MostLikedCommentView(APIView):
             like_count = CommentLikeBridge.objects.filter(comment_id=id).count()
             like_counts.append(like_count)
         count_list = { name:value for name, value in zip(comments_id, like_counts)}
-        like_rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True)[:3]
+        like_rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True)[:6]
         first = like_rank[0][0]
         second = like_rank[1][0]
         third = like_rank[2][0]
@@ -403,7 +403,7 @@ class MostVotedArticleView(APIView):
             vote_count = ArticleVoteBridge.objects.filter(article_id=id).count()
             vote_counts.append(vote_count)
         count_list = { name:value for name, value in zip(articles_id, vote_counts)}
-        vote_rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True)[:3]
+        vote_rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True)[:6]
         first = vote_rank[0][0]
         second = vote_rank[1][0]
         third = vote_rank[2][0]
