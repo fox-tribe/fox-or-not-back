@@ -54,7 +54,7 @@
 <br>
 
 **detail.html**<br>
-![Image 030](https://user-images.githubusercontent.com/102009707/182566438-3cd11348-5664-4e70-8741-6a05c7c21076.png)
+![Image 040](https://user-images.githubusercontent.com/102009707/182575259-6283ceff-0289-43aa-90b2-8ae885619dd8.png)
 <br>
 1. 게시물리스팅
 2. 게시물수정 및 삭제기능
