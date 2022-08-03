@@ -358,7 +358,7 @@ class MostLikedArticleView(APIView):
             like_count = ArticleLikeBridge.objects.filter(article_id=id).count()
             like_counts.append(like_count)
         count_list = { name:value for name, value in zip(articles_id, like_counts)}
-        like_rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True)[:3]
+        like_rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True)[:6]
         ranking = []
         for rank in range(len(like_rank)):
             if like_rank[rank][0] is not None: 
