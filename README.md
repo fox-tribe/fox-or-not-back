@@ -38,7 +38,7 @@
 ![Image 039](https://user-images.githubusercontent.com/102009707/182573287-ee81505f-0176-4457-b1cf-a116f812a14c.png)
 
 ## Figma Mock-up 및 구현기능
-**index.html**
+**index.html**<br>
 ![Image 027](https://user-images.githubusercontent.com/102009707/182565460-3371f882-e54b-499c-bebd-0d9351206ff6.png)
 <br>
 1. 로그인기능
@@ -47,13 +47,13 @@
 4. 'HOT 게시판' 공감순 리스팅
 <br>
 
-**signup.html**
+**signup.html**<br>
 ![Image 029](https://user-images.githubusercontent.com/102009707/182566222-dbf07a85-10d1-4d7e-8493-c29091947c42.png)
 <br>
 1. 회원가입기능
 <br>
 
-**detail.html**
+**detail.html**<br>
 ![Image 030](https://user-images.githubusercontent.com/102009707/182566438-3cd11348-5664-4e70-8741-6a05c7c21076.png)
 <br>
 1. 게시물리스팅
@@ -63,20 +63,20 @@
 4. 투표기능
 <br>
 
-**posting.html**
+**posting.html**<br>
 ![Image 035](https://user-images.githubusercontent.com/102009707/182569714-32e3d47f-245a-4f97-be54-e1d475c4537d.png)
 <br>
 1. 게시물 작성기능
 <br>
 
-**mypage.html**
+**mypage.html**<br>
 ![Image 033](https://user-images.githubusercontent.com/102009707/182567996-9f804481-d9b0-4571-98d9-5c7d0a67bd1c.png)
 <br>
 1. 내가 쓴 글 및 댓글 리스팅 클릭시 이동
 2. 닉네임, 성별 및 비밀번호 변경 및 중복확인과 현재정보확인
 <br>
 
-**board.html**
+**board.html**<br>
 ![Image 038](https://user-images.githubusercontent.com/102009707/182572467-235fa881-ac9e-49aa-88d2-4659b9339f37.png)
 <br>
 1. 각 게시판별 게시물 리스팅
@@ -84,7 +84,7 @@
 3. 검색기능
 <br>
 
-**search_result.html**
+**search_result.html**<br>
 ![Image 037](https://user-images.githubusercontent.com/102009707/182571855-9e76fa81-d6f3-40ae-a699-ccf83e92fb68.png)
 <br>
 1. 검색결과 리스팅
