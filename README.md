@@ -92,7 +92,7 @@
 3. 검색기능
 
 ## 👀 기능구현동영상
-[![IMAGE ALT TEXT HERE](https://iboxcomein.com/wp-content/uploads/2021/08/%EC%9C%A0%ED%8A%9C%EB%B8%8C_%EB%A1%9C%EA%B3%A0.png)](https://www.youtube.com/watch?v=1MRtEahLy1I)
+[![IMAGE ALT TEXT HERE](https://iboxcomein.com/wp-content/uploads/2021/08/%EC%9C%A0%ED%8A%9C%EB%B8%8C_%EB%A1%9C%EA%B3%A0.png)](https://www.youtube.com/watch?v=oQBAiwyp5n4)
 
 
 ![Footer](https://capsule-render.vercel.app/api?type=waving&color=FF8339&height=200&section=footer)
