@@ -70,14 +70,14 @@
 <br>
 
 **mypage.html**<br>
-![Image 033](https://user-images.githubusercontent.com/102009707/182567996-9f804481-d9b0-4571-98d9-5c7d0a67bd1c.png)
+![Image 042](https://user-images.githubusercontent.com/102009707/182576104-b98dc674-714f-440a-8f75-7cad094819e5.png)
 <br>
 1. 내가 쓴 글 및 댓글 리스팅 클릭시 이동
 2. 닉네임, 성별 및 비밀번호 변경 및 중복확인과 현재정보확인
 <br>
 
 **board.html**<br>
-![Uploading Image 041.png…]()
+![Image 043](https://user-images.githubusercontent.com/102009707/182576372-f5938f48-5d74-482d-a8b4-b7d9003e1ae9.png)
 <br>
 1. 각 게시판별 게시물 리스팅
 2. 페이지네이션기능
@@ -85,7 +85,7 @@
 <br>
 
 **search_result.html**<br>
-![Image 037](https://user-images.githubusercontent.com/102009707/182571855-9e76fa81-d6f3-40ae-a699-ccf83e92fb68.png)
+![Image 044](https://user-images.githubusercontent.com/102009707/182576550-469e9a92-7d19-40b7-921e-20dcc9228a51.png)
 <br>
 1. 검색결과 리스팅
 2. 페이지네이션기능
