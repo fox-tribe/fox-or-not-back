@@ -14,6 +14,7 @@ urlpatterns = [
     path('search/', views.SearchResult.as_view()),
     path('likeCount/', views.MostLikedArticleView.as_view()),
     path('voteCount/', views.MostVotedArticleView.as_view()),
+    path('voteCount/board/', views.MostVotedArticleByBoardView.as_view()),
     path('comment/likeCount/', views.MostLikedCommentView.as_view()),
     path('board/', views.ArticleByBoard.as_view()),
     path('<obj_id>/', views.ArticleView.as_view()),
