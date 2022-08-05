@@ -417,7 +417,7 @@ class MostVotedArticleView(APIView):
 # HOT 게시판 투표순 리스팅
 class MostVotedArticleByBoardView(APIView):
     def get(self, request):
-        vote = ArticleModel.objects.annotate(num_vote=Count('articlevotebridge')).order_by('-num_vote')[::-1]
+        vote = ArticleModel.objects.annotate(num_vote=Count('articlevotebridge')).order_by('-num_vote')[:10][::-1]
         return Response(ArticleSerializer(vote, many=True).data)
 class SearchResult(APIView):
     permission_classes = [permissions.AllowAny]
