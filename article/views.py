@@ -404,11 +404,12 @@ class MostVotedArticleView(APIView):
             vote_counts.append(vote_count)
         count_list = { name:value for name, value in zip(articles_id, vote_counts)}
         vote_rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True)[:6]
-        first = vote_rank[0][0]
-        second = vote_rank[1][0]
-        third = vote_rank[2][0]
-        ranking = [first, second, third]
-        article_rank = ArticleModel.objects.filter(id__in = ranking)
+        rank_articles = []
+        for rank in range(len(vote_rank)):
+            ranker = vote_rank[rank][0]
+            rank_articles.append(ranker)
+
+        article_rank = ArticleModel.objects.filter(id__in = rank_articles)[::-1]
         return Response(ArticleSerializer(article_rank, many=True).data)
 
 class SearchResult(APIView):
