@@ -73,20 +73,6 @@ class CommentPagination(APIView, LimitOffsetPagination):
         serializer = CommentSerializer(results, many=True)
         return self.get_paginated_response(serializer.data)
 
-class ArticleView(APIView):
-    permission_classes = [permissions.AllowAny]
-
-    # 모든 게시글 리스팅
-    def get(self, request):
-        try:
-            board = request.query_params.getlist('board')[0]
-            articles = ArticleModel.objects.filter(board__name=board).order_by("-id")
-            result = ArticleSerializer(articles, many=True).data
-            return Response(result)
-        except:
-            articles = list(ArticleModel.objects.all().order_by("-id"))
-            result = ArticleSerializer(articles, many=True).data
-            return Response(result) 
 # 메인페이지 게시판별 아티클 리스팅
 class ArticleByBoard(APIView):
 
@@ -101,6 +87,21 @@ class ArticleByBoard(APIView):
             }
             results.append(results_data)
         return Response(results)
+class ArticleView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    # 모든 게시글 리스팅
+    def get(self, request):
+        try:
+            board = request.query_params.getlist('board')[0]
+            articles = ArticleModel.objects.filter(board__name=board).order_by("-id")
+            result = ArticleSerializer(articles, many=True).data
+            return Response(result)
+        except:
+            articles = list(ArticleModel.objects.all().order_by("-id"))
+            result = ArticleSerializer(articles, many=True).data
+            return Response(result) 
+
     # 게시글 작성
     def post(self, request):
         if request.user.is_anonymous:
@@ -125,6 +126,13 @@ class ArticleByBoard(APIView):
                     article_exposure_date = request.data.get('article_exposure_date',''),
                     board = board,
                 )
+            # # 머신러닝 필터링 파트
+            # model = BadWord.load_badword_model()
+            # data = BadWord.preprocessing(article.article_contents)
+            # if model.predict(data) > 0.8:
+            #     return Response({"error":"비속어 및 욕설이 포함되어 있습니다."})
+            # else:
+            #     pass
             if len(request.data.get('article_title','')) <= 1 :
                 return Response({"error":"title이 1자 이하라면 게시글을 작성할 수 없습니다."})
             elif len(request.data.get('article_contents','')) <= 10 :
@@ -395,23 +403,6 @@ class MostLikedCommentView(APIView):
 class MostVotedArticleView(APIView):
     def get(self, request):
         vote = ArticleModel.objects.annotate(num_vote=Count('articlevotebridge')).order_by('-num_vote')[:6][::-1]
-        # articles = list(ArticleModel.objects.all().values())
-        # articles_id = []
-        # for article in articles:
-        #     articles_id.append(article['id'])
-        # vote_counts = []
-        # for id in articles_id:
-        #     vote_count = ArticleVoteBridge.objects.filter(article_id=id).count()
-        #     vote_counts.append(vote_count)
-        # count_list = { name:value for name, value in zip(articles_id, vote_counts)}
-        # vote_rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True)[:6]
-        # print(vote_rank)
-        # rank_articles = []
-        # for rank in range(len(vote_rank)):
-        #     ranker = vote_rank[rank][0]
-        #     rank_articles.append(ranker)
-        # print(rank_articles)
-        # article_rank = ArticleModel.objects.filter(id__in = rank_articles)[::-1]
         return Response(ArticleSerializer(vote, many=True).data)
 
 # HOT 게시판 투표순 리스팅
