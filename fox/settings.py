@@ -20,15 +20,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-tpoo=1(hcn680t8jcth-fan72gehs+i1to=f=(=oeh%u4pvei)'
+SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'		
 
 # Application definition
 
@@ -58,8 +54,9 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'https://*',
-    'http://*',
+    'https://fox-or-not.com',
+    'https://www.fox-or-not.com',
+    'https://api.fox-or-not.com',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -68,7 +65,10 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 CORS_ORIGIN_WHITELIST = [
-    "http://*"
+    "http://*",
+    'https://fox-or-not.com',
+    'https://www.fox-or-not.com',
+    'https://api.fox-or-not.com',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -195,13 +195,23 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
+STATIC_ROOT = BASE_DIR / 'static'
 STATIC_URL = '/static/'
+
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
+
+ALLOWED_HOSTS = [
+	'43.200.182.180',
+	'fox-or-not.com',
+	'www.fox-or-not.com',
+	'api.fox-or-not.com',
+	]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 
 SIMPLE_JWT = {
 		# Access 토큰 유효 시간 설정하기
@@ -237,7 +247,6 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=60),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=60),
 }
-SESSION_COOKIE_AGE = 1200
-SESSION_SAVE_EVERY_REQUEST = True
+
 AUTH_USER_MODEL = "user.User"
 
