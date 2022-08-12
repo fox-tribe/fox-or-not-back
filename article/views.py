@@ -176,7 +176,8 @@ class CommentView(APIView):
     
 
     def get(self, request, obj_id):
-        return Response(CommentSerializer(obj_id).data)
+        comment = CommentModel.objects.get(id=obj_id)
+        return Response(CommentSerializer(comment).data)
 
     # 댓글 작성
     def post(self, request, obj_id):
@@ -314,44 +315,50 @@ class CommentLikeView(APIView):
     def get(self, request, comment_id):
         like_count = CommentLikeBridge.objects.filter(comment_id=comment_id).count()
         return Response(like_count)
+        
 
     def post(self, request, comment_id):
         like = CommentLike.objects.create()
-        comment = CommentModel.objects.get(id=comment_id)
-        contents = comment.comment_contents
         all = list(CommentLikeBridge.objects.all().values())
         all_id = []
         for obj in all:
             all_id.append(obj['user_id'])
-        
-
         if request.user.id in all_id:
-            # for i in all:
-            #     id = i['comment_id']                
             try:
-                CommentLikeBridge.objects.get(comment_id=comment_id)
-                comment_like = CommentLikeBridge.objects.get(comment_id=comment_id)
-                if comment_like.user_id == request.user.id:
-                    comment_like.delete()
-                    return Response({'message': f'{request.user}님께서 {contents[0:10]}...댓글에 공감을 취소하셨습니다.'})
-            except:
-                comment_like = CommentLikeBridge(
-                    comment_id = comment_id,
-                    user_id = request.user.id,
-                    like_id = like.id,
-                    category = request.data.get('category')
-            )
-                comment_like.save()
-                return Response({'message': f'{request.user}님께서 {contents[0:10]}...댓글에 {comment_like.category}하셨습니다.'})
-        else:
-            comment_like = CommentLikeBridge(
+                comment_like_set = CommentLikeBridge.objects.filter(comment_id=comment_id)
+                comment_like_values = list(comment_like_set.values())
+                for comment in comment_like_values:
+                    if comment['user_id'] == request.user.id:
+                        target = comment_like_set.last()
+                        target.delete()
+                        return Response({'message': f'{request.user}님께서 댓글에 공감을 취소하셨습니다.'})
+                like = CommentLikeBridge(
                 comment_id = comment_id,
                 user_id = request.user.id,
                 like_id = like.id,
                 category = request.data.get('category')
             )
-            comment_like.save()
-            return Response({'message': f'{request.user}님께서 {contents[0:10]}...댓글에 {comment_like.category}하셨습니다.'})
+                like.save()
+                return Response({'message': f'{request.user}님께서 댓글에 공감하셨습니다.'})
+            except:
+                like = CommentLikeBridge(
+                comment_id = comment_id,
+                user_id = request.user.id,
+                like_id = like.id,
+                category = request.data.get('category')
+            )
+                like.save()
+                return Response({'message': f'{request.user}님께서 댓글에 공감하셨습니다.'})
+        else:
+            like = CommentLikeBridge(
+                comment_id = comment_id,
+                user_id = request.user.id,
+                like_id = like.id,
+                category = request.data.get('category')
+            )
+            like.save()
+            return Response({'message': f'{request.user}님께서 댓글에 공감하셨습니다.'})
+
 
 
 # 공감순 게시글 탑3 리스팅
