@@ -44,26 +44,6 @@ class ArticlePagination(APIView, LimitOffsetPagination):
             serializer = ArticleSerializer(results, many=True)
             return self.get_paginated_response(serializer.data)
 
-# 투표순 탑3 리스팅
-class MostVotedArticleView(APIView):
-    def get(self, request):
-        articles = list(ArticleModel.objects.all().values())
-        articles_id = []
-        for article in articles:
-            articles_id.append(article['id'])
-        vote_counts = []
-        for id in articles_id:
-            vote_count = ArticleVoteBridge.objects.filter(article_id=id).count()
-            vote_counts.append(vote_count)
-        count_list = { name:value for name, value in zip(articles_id, vote_counts)}
-        vote_rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True)[:3]
-        first = vote_rank[0][0]
-        second = vote_rank[1][0]
-        third = vote_rank[2][0]
-        ranking = [first, second, third]
-        article_rank = ArticleModel.objects.filter(id__in = ranking)
-        return Response(ArticleSerializer(article_rank, many=True).data)
-
 
 # 댓글 페이지네이션 리스팅
 class CommentPagination(APIView, LimitOffsetPagination):
@@ -73,20 +53,6 @@ class CommentPagination(APIView, LimitOffsetPagination):
         serializer = CommentSerializer(results, many=True)
         return self.get_paginated_response(serializer.data)
 
-# 메인페이지 게시판별 아티클 리스팅
-class ArticleByBoard(APIView):
-
-    def get(self, request):
-        boards = request.query_params.getlist('boards', '')
-        results = []
-        for board in boards:
-            articles = ArticleModel.objects.filter(board__name=board).order_by("-id")[:5]
-            result = ArticleSerializer(articles, many=True).data
-            results_data = {
-                f"{board}" : result
-            }
-            results.append(results_data)
-        return Response(results)
 class ArticleView(APIView):
     permission_classes = [permissions.AllowAny]
 
