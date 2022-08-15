@@ -33,9 +33,6 @@ class ArticlePagination(APIView, LimitOffsetPagination):
     def get(self, request, format=None):
         board = request.query_params.getlist('board')[0]
         page = int(request.query_params.getlist('page')[0])
-        # if board == 'HOT':
-        #     articles = ArticleModel.objects.filter(board__name=board)
-        #     print(articles)
         articles = ArticleModel.objects.filter(board__name=board).order_by("-id")[((page-1)*10):(page*10)]
         if board == 'HOT':
             return Response()
@@ -194,7 +191,6 @@ class ArticleLikeView(APIView):
         like = ArticleLike.objects.create()
         article_title = ArticleModel.objects.get(id=article_id)
         all = list(ArticleLikeBridge.objects.all().values())
-        print(all)
         all_id = []
         for obj in all:
             all_id.append(obj['user_id'])

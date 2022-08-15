@@ -109,7 +109,6 @@ class OnlyAuthenticatedUserView(APIView):
 
     def get(self, request):
         user = request.user
-        print(f"user 정보 : {user}")
         if not user:
             return Response({"error": "접근 권한이 없습니다."}, status=status.HTTP_401_UNAUTHORIZED)            
         return Response(UserSerializer(user).data)
