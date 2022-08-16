@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ''
+SECRET_KEY = 'django-insecure-tpoo=1(hcn680t8jcth-fan72gehs+i1to=f=(=oeh%u4pvei)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -202,6 +202,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 
 ALLOWED_HOSTS = [
+    '127.0.0.1',
 	'43.200.182.180',
 	'fox-or-not.com',
 	'www.fox-or-not.com',

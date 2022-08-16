@@ -33,9 +33,6 @@ class ArticlePagination(APIView, LimitOffsetPagination):
     def get(self, request, format=None):
         board = request.query_params.getlist('board')[0]
         page = int(request.query_params.getlist('page')[0])
-        # if board == 'HOT':
-        #     articles = ArticleModel.objects.filter(board__name=board)
-        #     print(articles)
         articles = ArticleModel.objects.filter(board__name=board).order_by("-id")[((page-1)*10):(page*10)]
         if board == 'HOT':
             return Response()
@@ -43,26 +40,6 @@ class ArticlePagination(APIView, LimitOffsetPagination):
             results = self.paginate_queryset(articles, request, view=self)
             serializer = ArticleSerializer(results, many=True)
             return self.get_paginated_response(serializer.data)
-
-# 투표순 탑3 리스팅
-class MostVotedArticleView(APIView):
-    def get(self, request):
-        articles = list(ArticleModel.objects.all().values())
-        articles_id = []
-        for article in articles:
-            articles_id.append(article['id'])
-        vote_counts = []
-        for id in articles_id:
-            vote_count = ArticleVoteBridge.objects.filter(article_id=id).count()
-            vote_counts.append(vote_count)
-        count_list = { name:value for name, value in zip(articles_id, vote_counts)}
-        vote_rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True)[:3]
-        first = vote_rank[0][0]
-        second = vote_rank[1][0]
-        third = vote_rank[2][0]
-        ranking = [first, second, third]
-        article_rank = ArticleModel.objects.filter(id__in = ranking)
-        return Response(ArticleSerializer(article_rank, many=True).data)
 
 
 # 댓글 페이지네이션 리스팅
@@ -73,20 +50,6 @@ class CommentPagination(APIView, LimitOffsetPagination):
         serializer = CommentSerializer(results, many=True)
         return self.get_paginated_response(serializer.data)
 
-# 메인페이지 게시판별 아티클 리스팅
-class ArticleByBoard(APIView):
-
-    def get(self, request):
-        boards = request.query_params.getlist('boards', '')
-        results = []
-        for board in boards:
-            articles = ArticleModel.objects.filter(board__name=board).order_by("-id")[:5]
-            result = ArticleSerializer(articles, many=True).data
-            results_data = {
-                f"{board}" : result
-            }
-            results.append(results_data)
-        return Response(results)
 class ArticleView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -176,7 +139,8 @@ class CommentView(APIView):
     
 
     def get(self, request, obj_id):
-        return Response(CommentSerializer(obj_id).data)
+        comment = CommentModel.objects.get(id=obj_id)
+        return Response(CommentSerializer(comment).data)
 
     # 댓글 작성
     def post(self, request, obj_id):
@@ -227,7 +191,6 @@ class ArticleLikeView(APIView):
         like = ArticleLike.objects.create()
         article_title = ArticleModel.objects.get(id=article_id)
         all = list(ArticleLikeBridge.objects.all().values())
-        print(all)
         all_id = []
         for obj in all:
             all_id.append(obj['user_id'])
@@ -314,44 +277,50 @@ class CommentLikeView(APIView):
     def get(self, request, comment_id):
         like_count = CommentLikeBridge.objects.filter(comment_id=comment_id).count()
         return Response(like_count)
+        
 
     def post(self, request, comment_id):
         like = CommentLike.objects.create()
-        comment = CommentModel.objects.get(id=comment_id)
-        contents = comment.comment_contents
         all = list(CommentLikeBridge.objects.all().values())
         all_id = []
         for obj in all:
             all_id.append(obj['user_id'])
-        
-
         if request.user.id in all_id:
-            # for i in all:
-            #     id = i['comment_id']                
             try:
-                CommentLikeBridge.objects.get(comment_id=comment_id)
-                comment_like = CommentLikeBridge.objects.get(comment_id=comment_id)
-                if comment_like.user_id == request.user.id:
-                    comment_like.delete()
-                    return Response({'message': f'{request.user}님께서 {contents[0:10]}...댓글에 공감을 취소하셨습니다.'})
-            except:
-                comment_like = CommentLikeBridge(
-                    comment_id = comment_id,
-                    user_id = request.user.id,
-                    like_id = like.id,
-                    category = request.data.get('category')
-            )
-                comment_like.save()
-                return Response({'message': f'{request.user}님께서 {contents[0:10]}...댓글에 {comment_like.category}하셨습니다.'})
-        else:
-            comment_like = CommentLikeBridge(
+                comment_like_set = CommentLikeBridge.objects.filter(comment_id=comment_id)
+                comment_like_values = list(comment_like_set.values())
+                for comment in comment_like_values:
+                    if comment['user_id'] == request.user.id:
+                        target = comment_like_set.last()
+                        target.delete()
+                        return Response({'message': f'{request.user}님께서 댓글에 공감을 취소하셨습니다.'})
+                like = CommentLikeBridge(
                 comment_id = comment_id,
                 user_id = request.user.id,
                 like_id = like.id,
                 category = request.data.get('category')
             )
-            comment_like.save()
-            return Response({'message': f'{request.user}님께서 {contents[0:10]}...댓글에 {comment_like.category}하셨습니다.'})
+                like.save()
+                return Response({'message': f'{request.user}님께서 댓글에 공감하셨습니다.'})
+            except:
+                like = CommentLikeBridge(
+                comment_id = comment_id,
+                user_id = request.user.id,
+                like_id = like.id,
+                category = request.data.get('category')
+            )
+                like.save()
+                return Response({'message': f'{request.user}님께서 댓글에 공감하셨습니다.'})
+        else:
+            like = CommentLikeBridge(
+                comment_id = comment_id,
+                user_id = request.user.id,
+                like_id = like.id,
+                category = request.data.get('category')
+            )
+            like.save()
+            return Response({'message': f'{request.user}님께서 댓글에 공감하셨습니다.'})
+
 
 
 # 공감순 게시글 탑3 리스팅

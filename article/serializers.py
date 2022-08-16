@@ -38,7 +38,8 @@ class CommentSerializer(serializers.ModelSerializer):
         return instance
     class Meta :
         model = CommentModel
-        fields = ['id', 'article', 'comment_author', 'author','nickname', 'comment_created_at', 'comment_contents', 'comments_related_article', 'count']
+        fields = ['id', 'article', 'comment_author', 'author','nickname', 'comment_created_at', 
+        'comment_contents', 'comments_related_article', 'count']
 
 class ArticleSerializer(serializers.ModelSerializer):
     comment_set = CommentSerializer(many=True)

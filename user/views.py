@@ -38,19 +38,25 @@ class UserView(APIView):
 
     def put(self, request):
         user = UserModel.objects.get(username=request.user)
-        if UserModel.objects.filter(nickname=request.data.get("nickname")) == True :
-            return Response({"error":"중복된 닉네임입니다."})
-        else:
+        try:
+            nickname = UserModel.objects.filter(nickname=request.data.get("nickname"))
+            if nickname:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
             pass
         password = request.data.pop("password")
-        user.password = ""
-        user.set_password(password)
-        user_serializer = UserSerializer(user, data=request.data, partial=True, context={"request": request})
+        username = request.user
+        user = authenticate(request, username=username, password=password)
+        if not user:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            login(request, user)
+            user_serializer = UserSerializer(user, data=request.data, partial=True, context={"request": request})
 
-        if user_serializer.is_valid():
-            user_serializer.save()
-            return Response(user_serializer.data, status=status.HTTP_200_OK)
-        return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if user_serializer.is_valid():
+                user_serializer.save()
+                return Response(user_serializer.data, status=status.HTTP_200_OK)
+            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -103,7 +109,6 @@ class OnlyAuthenticatedUserView(APIView):
 
     def get(self, request):
         user = request.user
-        print(f"user 정보 : {user}")
         if not user:
             return Response({"error": "접근 권한이 없습니다."}, status=status.HTTP_401_UNAUTHORIZED)            
         return Response(UserSerializer(user).data)
