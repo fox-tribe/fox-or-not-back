@@ -1,4 +1,6 @@
 ![header](https://capsule-render.vercel.app/api?type=waving&color=FF8339&height=150&section=header&text=Final%20Project&fontSize=30&style="color:white")
+![00001](https://user-images.githubusercontent.com/102009707/187959418-2aca40b1-4bc8-4e35-9dde-2fb75886545e.png)
+
 
 ## 🦊 "너 그거 폭스야"
 #### “주변인의 이 행동 너무 헷갈려요… 오해일까요?”🤔 알쏭달쏭한 이성의 행동에 답을 알려주는 커뮤니티 만들기😽"
